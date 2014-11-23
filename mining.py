@@ -45,12 +45,13 @@ def read_stock_data(stock_name, stock_file_name):
         stock_year = stock_date.year
         year_dict[stock_year][stock_month][0] += day_stock_price_detail["Close"]*day_stock_price_detail["Volume"]
         year_dict[stock_year][stock_month][1] += day_stock_price_detail["Volume"]
-
-  #year_dict has key as year, and value as stock detail#
-    print(year_dict[2005][2])
-
-
-
+  #year_dict has key as year, and value as stock detail (0 element as sales and 1 element as volume)#
+    avg_price = []
+    for year in year_range:
+        for month in range(1, 13):
+            if year_dict[year][month][1] != 0:
+                price = year_dict[year][month][0]/year_dict[year][month][1]
+                avg_price.append((str(year)+"/"+str(month), price))
 
 
 def six_best_months():

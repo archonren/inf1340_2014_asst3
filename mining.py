@@ -15,17 +15,21 @@ import json
 from datetime import *
 
 
-stock_data = []
-monthly_averages = []
-
-
 def read_json_from_file(file_name):
+    # open and read json files#
     with open(file_name) as file_handle:
         file_contents = file_handle.read()
     return json.loads(file_contents)
 
 
 def read_stock_data(stock_name, stock_file_name):
+    """
+    calculate the average price for given stock per month
+
+    :param stock_name: The name of a stock.
+    :param stock_file_name: The name of a JSON formatted file that contains stock information.
+    :return: List of tuples.tuple contains year/month and the average price.
+    """
     stock_data_list = read_json_from_file(stock_file_name)
     date_list = []
     for day_stock_price_detail in stock_data_list:

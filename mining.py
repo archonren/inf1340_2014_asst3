@@ -38,14 +38,16 @@ def read_stock_data(stock_name, stock_file_name):
   #find the range of year#
     year_dict = {}
     for year in year_range:
-        year_dict[year] = [[], [], [], [], [], [], [], [], [], [], [], [], []]
+        year_dict[year] = [[], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
     for day_stock_price_detail in stock_data_list:
         stock_date = datetime.strptime(day_stock_price_detail["Date"], "%Y-%m-%d")
         stock_month = stock_date.month
         stock_year = stock_date.year
-        year_dict[stock_year][stock_month] = day_stock_price_detail
-  #year_dict has key as year, and value as stock detail#
+        year_dict[stock_year][stock_month][0] += day_stock_price_detail["Close"]*day_stock_price_detail["Volume"]
+        year_dict[stock_year][stock_month][1] += day_stock_price_detail["Volume"]
 
+  #year_dict has key as year, and value as stock detail#
+    print(year_dict[2005][2])
 
 
 

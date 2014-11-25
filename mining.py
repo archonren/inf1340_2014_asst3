@@ -32,37 +32,23 @@ def read_stock_data(stock_name, stock_file_name):
     :return: List of tuples.tuple contains year/month and the average price.
     """
     stock_data_list = read_json_from_file(stock_file_name)
-    date_list = []
-    for day_stock_price_detail in stock_data_list:
-        stock_date = datetime.strptime(day_stock_price_detail["Date"], "%Y-%m-%d")
-        date_list.append(stock_date)
-    date_list = sorted(date_list)
-    year_range = []
-    for year in range(date_list[0].year, date_list[-1].year+1):
-        year_range.append(year)
-  #find the range of year#
     year_dict = {}
-    for year in year_range:
-        year_dict[year] = [[], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
     for day_stock_price_detail in stock_data_list:
         stock_date = datetime.strptime(day_stock_price_detail["Date"], "%Y-%m-%d")
-        stock_month = stock_date.month
-        stock_year = stock_date.year
-        year_dict[stock_year][stock_month][0] += day_stock_price_detail["Close"]*day_stock_price_detail["Volume"]
-        year_dict[stock_year][stock_month][1] += day_stock_price_detail["Volume"]
-  #year_dict has key as year, and value as stock detail (0 element as sales and 1 element as volume)#
+        day_stock_price_detail["Date"] = str(stock_date.year)+"/"+str(stock_date.month)
+        year_dict.setdefault(day_stock_price_detail["Date"])
+        year_dict[day_stock_price_detail["Date"]] = [0, 0]
+  #fix the date, delete the day, only leave the year and month and set up space for sales and volume#
+    for day_stock_price_detail in stock_data_list:
+        year_dict[day_stock_price_detail["Date"]][0] += day_stock_price_detail["Close"]*day_stock_price_detail["Volume"]
+        year_dict[day_stock_price_detail["Date"]][1] += day_stock_price_detail["Volume"]
+  #year_dict has key as year/month, and value as stock detail (0 element as sales and 1 element as volume)#
     avg_price = []
-    for year in year_range:
-        for month in range(1, 13):
-            if year_dict[year][month][1] != 0:
-                #ensure the volume is not 0#
-                price = year_dict[year][month][0]/year_dict[year][month][1]
-                price = Decimal(price).quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
-                avg_price.append((str(year)+"/"+str(month), price))
-            elif year_dict[year][month][0] != 0:
-                #if the stock has non-zero price but zero volume, return avg price as 0#
-                price = 0
-                avg_price.append((str(year)+"/"+str(month), price))
+    for key_time in year_dict:
+        price = year_dict[key_time][0]/year_dict[key_time][1]
+        price = Decimal(price).quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
+        avg_price.append((key_time, float(price)))
+    print(avg_price)
 
 
 def six_best_months():

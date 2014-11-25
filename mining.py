@@ -33,6 +33,7 @@ def read_stock_data(stock_name, stock_file_name):
     """
     stock_data_list = read_json_from_file(stock_file_name)
     year_dict = {}
+    avg_price = []
     for day_stock_price_detail in stock_data_list:
         stock_date = datetime.strptime(day_stock_price_detail["Date"], "%Y-%m-%d")
         day_stock_price_detail["Date"] = str(stock_date.year)+"/"+str(stock_date.month)
@@ -43,12 +44,10 @@ def read_stock_data(stock_name, stock_file_name):
         year_dict[day_stock_price_detail["Date"]][0] += day_stock_price_detail["Close"]*day_stock_price_detail["Volume"]
         year_dict[day_stock_price_detail["Date"]][1] += day_stock_price_detail["Volume"]
   #year_dict has key as year/month, and value as stock detail (0 element as sales and 1 element as volume)#
-    avg_price = []
     for key_time in year_dict:
         price = year_dict[key_time][0]/year_dict[key_time][1]
         price = Decimal(price).quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
         avg_price.append((key_time, float(price)))
-    print(avg_price)
 
 
 def six_best_months():

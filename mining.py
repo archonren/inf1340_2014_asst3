@@ -15,6 +15,7 @@ import json
 from datetime import *
 from decimal import *
 
+
 def read_json_from_file(file_name):
     # open and read json files#
     with open(file_name) as file_handle:

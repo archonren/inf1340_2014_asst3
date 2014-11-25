@@ -13,7 +13,7 @@ __status__ = "Prototype"
 # imports one per line
 import json
 from datetime import *
-
+from decimal import *
 
 def read_json_from_file(file_name):
     # open and read json files#
@@ -54,7 +54,13 @@ def read_stock_data(stock_name, stock_file_name):
     for year in year_range:
         for month in range(1, 13):
             if year_dict[year][month][1] != 0:
+                #ensure the volume is not 0#
                 price = year_dict[year][month][0]/year_dict[year][month][1]
+                price = Decimal(price).quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
+                avg_price.append((str(year)+"/"+str(month), price))
+            elif year_dict[year][month][0] != 0:
+                #if the stock has non-zero price but zero volume, return avg price as 0#
+                price = 0
                 avg_price.append((str(year)+"/"+str(month), price))
 
 

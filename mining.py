@@ -57,6 +57,3 @@ def six_best_months():
 
 def six_worst_months():
     return [('', 0.0), ('', 0.0), ('', 0.0), ('', 0.0), ('', 0.0), ('', 0.0)]
-
-
-read_stock_data("GOOG", "data/GOOG.json")

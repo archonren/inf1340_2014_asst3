@@ -23,6 +23,3 @@ def test_goog():
 
 
 test_goog()
-
-
-

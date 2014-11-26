@@ -47,6 +47,7 @@ def read_stock_data(stock_name, stock_file_name):
         price = year_dict[key_time][0]/year_dict[key_time][1]
         price = Decimal(price).quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
         avg_price.append((key_time, float(price)))
+    return avg_price
 
 
 def six_best_months():

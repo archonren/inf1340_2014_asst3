@@ -12,15 +12,10 @@ __status__ = "Prototype"
 
 # imports one per line
 import json
+import os.path
 from datetime import *
 from decimal import *
-
-
-def read_json_from_file(file_name):
-    # open and read json files#
-    with open(file_name) as file_handle:
-        file_contents = file_handle.read()
-    return json.loads(file_contents)
+from operator import itemgetter
 
 
 def read_stock_data(stock_name, stock_file_name):
@@ -31,8 +26,13 @@ def read_stock_data(stock_name, stock_file_name):
     :param stock_file_name: The name of a JSON formatted file that contains stock information.
     :return: List of tuples.tuple contains year/month and the average price.
     """
-    stock_data_list = read_json_from_file(stock_file_name)
+    # loads json file contents into stock_data_list
+    script_path = os.path.dirname(__file__)
+    with open(os.path.join(script_path, stock_file_name)) as file_reader:
+        stock_data_list = json.loads(file_reader.read())
+
     year_dict = {}
+    global avg_price
     avg_price = []
     for day_stock_price_detail in stock_data_list:
         stock_date = datetime.strptime(day_stock_price_detail["Date"], "%Y-%m-%d")
@@ -51,8 +51,13 @@ def read_stock_data(stock_name, stock_file_name):
 
 
 def six_best_months():
-    return [('', 0.0), ('', 0.0), ('', 0.0), ('', 0.0), ('', 0.0), ('', 0.0)]
+    global avg_price
+    list.sort(avg_price, key=itemgetter(1), reverse=True)
+    print(sorted(avg_price, key=itemgetter(1)))
+    return avg_price[0:5]
 
 
 def six_worst_months():
-    return [('', 0.0), ('', 0.0), ('', 0.0), ('', 0.0), ('', 0.0), ('', 0.0)]
+    global avg_price
+    list.sort(avg_price, key=itemgetter(1))
+    return avg_price[0:5]

@@ -38,7 +38,6 @@ def read_stock_data(stock_name, stock_file_name):
     year_dict = {}
     global avg_price
     avg_price = []
-    clear_incomplete_month(stock_data_list)
     for day_stock_price_detail in stock_data_list:
         stock_date = datetime.strptime(day_stock_price_detail["Date"], "%Y-%m-%d")
         day_stock_price_detail["Date"] = str(stock_date.year)+"/"+str(stock_date.month).zfill(2)

@@ -39,6 +39,7 @@ def read_stock_data(stock_name, stock_file_name):
     year_dict = {}
     global avg_price
     avg_price = []
+    stock_data_list = clear_incomplete_month(stock_data_list)
     for day_stock_price_detail in stock_data_list:
         stock_date = datetime.strptime(day_stock_price_detail["Date"], "%Y-%m-%d")
         day_stock_price_detail["Date"] = str(stock_date.year)+"/"+str(stock_date.month).zfill(2)
@@ -54,27 +55,55 @@ def read_stock_data(stock_name, stock_file_name):
         avg_price.append((key_time, float(price)))
 
 
-"""
 def clear_incomplete_month(stock_data_list):
-    stock_year_month = []
-    stock_data_list = sorted(stock_data_list, key=lambda x: x["Date"])
-    for day_stock_price_detail in stock_data_list:
-        stock_date = datetime.strptime(day_stock_price_detail["Date"], "%Y-%m-%d")
-        stock_year_month.append(str(stock_date.year)+"/"+str(stock_date.month).zfill(2))
-    stock_year_month = list(set(stock_year_month))
-    for day_stock_price_detail in stock_data_list:
-        stock_date = datetime.strptime(day_stock_price_detail["Date"], "%Y-%m-%d")
+    """
+    remove months that are not start from the first week or does not end at the last week from stock data
 
-"""
+    :param stock_data_list: the stock data
+    :return: List of stock data that across a whole month
+    """
+    delete_list = []
+    stock_month_start_from_beginning = []
+    stock_month_end_properly = []
+    for day_stock_price_detail in stock_data_list:
+        stock_date = datetime.strptime(day_stock_price_detail["Date"], "%Y-%m-%d")
+        if (stock_date - timedelta(days=7)).month != stock_date.month:
+            stock_month_start_from_beginning.append(str(stock_date.year)+"/"+str(stock_date.month).zfill(2))
+    stock_month_start_from_beginning = list(set(stock_month_start_from_beginning))
+    #find the month that start from the first week#
+    for day_stock_price_detail in stock_data_list:
+        stock_date = datetime.strptime(day_stock_price_detail["Date"], "%Y-%m-%d")
+        if (stock_date + timedelta(days=7)).month != stock_date.month:
+            stock_month_end_properly.append(str(stock_date.year)+"/"+str(stock_date.month).zfill(2))
+    stock_month_end_properly = list(set(stock_month_end_properly))
+    #find the month that end at the last week#
+    stock_year_month = set(stock_month_end_properly).intersection(set(stock_month_start_from_beginning))
+    for day_stock_price_detail in stock_data_list:
+        stock_date = datetime.strptime(day_stock_price_detail["Date"], "%Y-%m-%d")
+        if str(stock_date.year)+"/"+str(stock_date.month).zfill(2) not in stock_year_month:
+            delete_list.append(day_stock_price_detail)
+    for key in delete_list:
+        stock_data_list.remove(key)
+    return stock_data_list
 
 
 def six_best_months():
+    """
+    find the six best months
+
+    :return: List of tuples.tuple contains the six best average price and year/month.
+    """
     global avg_price
     list.sort(avg_price, key=itemgetter(1), reverse=True)
     return avg_price[:6]
 
 
 def six_worst_months():
+    """
+    find the six worst months
+
+    :return: List of tuples.tuple contains the six worst average price and year/month.
+    """
     global avg_price
     list.sort(avg_price, key=itemgetter(1))
     return avg_price[:6]

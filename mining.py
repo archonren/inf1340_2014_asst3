@@ -14,6 +14,7 @@ __status__ = "Prototype"
 import json
 from datetime import *
 from decimal import *
+from operator import itemgetter
 
 
 def read_json_from_file(file_name):
@@ -53,17 +54,6 @@ def read_stock_data(stock_name, stock_file_name):
         avg_price.append((key_time, float(price)))
 
 
-def six_best_months():
-    outcome = sorted(avg_price, key=lambda x: x[1], reverse=True)
-    print(outcome[:6:])
-    return outcome[:6:]
-
-
-def six_worst_months():
-    outcome = sorted(avg_price, key=lambda x: x[1])
-    print(outcome[:6:])
-    return outcome[:6:]
-
 """
 def clear_incomplete_month(stock_data_list):
     stock_year_month = []
@@ -76,3 +66,15 @@ def clear_incomplete_month(stock_data_list):
         stock_date = datetime.strptime(day_stock_price_detail["Date"], "%Y-%m-%d")
 
 """
+
+
+def six_best_months():
+    global avg_price
+    list.sort(avg_price, key=itemgetter(1), reverse=True)
+    return avg_price[:6]
+
+
+def six_worst_months():
+    global avg_price
+    list.sort(avg_price, key=itemgetter(1))
+    return avg_price[:6]

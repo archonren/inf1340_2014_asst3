@@ -16,15 +16,15 @@ from datetime import *
 from decimal import *
 from operator import itemgetter
 
+global avg_price
+avg_price = []
+
 
 def read_json_from_file(file_name):
     # open and read json files#
     with open(file_name) as file_handle:
         file_contents = file_handle.read()
     return json.loads(file_contents)
-
-global avg_price
-avg_price = []
 
 
 def read_stock_data(stock_name, stock_file_name):
@@ -35,20 +35,22 @@ def read_stock_data(stock_name, stock_file_name):
     :param stock_file_name: The name of a JSON formatted file that contains stock information.
     :return: List of tuples.tuple contains year/month and the average price.
     """
-    stock_data_list = read_json_from_file(stock_file_name)
-    year_dict = {}
     global avg_price
     avg_price = []
+    year_dict = {}
+    #define and clear all variable#
+    stock_data_list = read_json_from_file(stock_file_name)
     stock_data_list = clear_incomplete_month(stock_data_list)
+    #discard all months that are not start or end properly#
     for day_stock_price_detail in stock_data_list:
         stock_date = datetime.strptime(day_stock_price_detail["Date"], "%Y-%m-%d")
         day_stock_price_detail["Date"] = str(stock_date.year)+"/"+str(stock_date.month).zfill(2)
         year_dict.setdefault(day_stock_price_detail["Date"], [0, 0])
-  #fix the date, delete the day, only leave the year and month and set up space for sales and volume#
+    #fix the date, delete the day, only leave the year and month and set up space for sales and volume#
     for day_stock_price_detail in stock_data_list:
         year_dict[day_stock_price_detail["Date"]][0] += day_stock_price_detail["Close"]*day_stock_price_detail["Volume"]
         year_dict[day_stock_price_detail["Date"]][1] += day_stock_price_detail["Volume"]
-  #year_dict has key as year/month, and value as stock detail (0 element as sales and 1 element as volume)#
+    #year_dict has key as year/month, and value as stock detail (0 element as sales and 1 element as volume)#
     for key_time in year_dict:
         price = year_dict[key_time][0]/year_dict[key_time][1]
         price = Decimal(price).quantize(Decimal('.01'), rounding=ROUND_HALF_UP)
